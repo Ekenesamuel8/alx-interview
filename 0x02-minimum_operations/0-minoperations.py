@@ -1,4 +1,4 @@
-#!/usr/bin/python env
+#!/usr/bin/python3
 """calculates the fewest number of operations needed"""
 
 
