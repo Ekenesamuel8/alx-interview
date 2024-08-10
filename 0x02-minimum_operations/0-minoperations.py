@@ -18,3 +18,4 @@ def minOperations(n):
             prime_nub += div_num
             n //= div_num
         div_num += 1
+    return prime_nub
