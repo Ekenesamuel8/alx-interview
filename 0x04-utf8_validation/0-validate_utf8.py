@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 def validUTF8(data):
     # Number of bytes remaining to complete a character
     num_bytes = 0
