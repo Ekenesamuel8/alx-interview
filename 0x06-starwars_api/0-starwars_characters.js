@@ -21,13 +21,18 @@ request(url, { json: true }, (err, res, body) => {
 
     const characters = body.characters;
 
-    characters.forEach(characterUrl => {
-        request(characterUrl, { json: true }, (err, res, body) => {
+    function fetchCharacter(index) {
+        if (index >= characters.length) return; // Exit condition
+
+        request(characters[index], { json: true }, (err, res, body) => {
             if (err) {
                 return console.error('Error:', err);
             }
             console.log(body.name);
+            fetchCharacter(index + 1); // Fetch the next character
         });
-    });
+    }
+
+    fetchCharacter(0); // Start fetching characters from the first one
 });
 
