@@ -1,37 +1,33 @@
 #!/usr/bin/node
-import requests
-import sys
 
+const request = require('request');
 
-def get_movie_characters(movie_id):
-    # Base URL for the SWAPI films endpoint
-    films_url = f'https://swapi.dev/api/films/{movie_id}/'
+const movieId = process.argv[2];
 
-    try:
-        # Request movie data
-        response = requests.get(films_url)
-        response.raise_for_status()  # Raise an error for bad responses
+if (!movieId) {
+    console.log("Usage: node 0-starwars_characters.js <Movie ID>");
+    process.exit(1);
+}
 
-        # Parse the movie data
-        movie_data = response.json()
+const url = `https://swapi.dev/api/films/${movieId}/`;
 
-        # Fetch and print character names
-        character_urls = movie_data.get('characters', [])
-        for character_url in character_urls:
-            character_response = requests.get(character_url)
-            character_response.raise_for_status()
-            character_data = character_response.json()
-            print(character_data['name'])
+request(url, { json: true }, (err, res, body) => {
+    if (err) {
+        return console.error('Error:', err);
+    }
+    if (res.statusCode !== 200) {
+        return console.error('Failed to retrieve movie:', res.statusCode);
+    }
 
-    except requests.exceptions.HTTPError as http_err:
-        print(f"HTTP error occurred: {http_err}")
-    except requests.exceptions.RequestException as err:
-        print(f"Error occurred: {err}")
+    const characters = body.characters;
 
-if __name__ == "__main__":
-    # Check if a Movie ID was provided as an argument
-    if len(sys.argv) != 2:
-        print("Usage: python script_name.py <Movie ID>")
-    else:
-        movie_id = sys.argv[1]
-        get_movie_characters(movie_id)
+    characters.forEach(characterUrl => {
+        request(characterUrl, { json: true }, (err, res, body) => {
+            if (err) {
+                return console.error('Error:', err);
+            }
+            console.log(body.name);
+        });
+    });
+});
+
